@@ -82,11 +82,14 @@ app.post("/chats", async(req, res) => {
 });
 
 
-//NEW - Show Route
+//NEW - Show Route  (new show created in index.ejs create separate page show.ejs for this)
 app.get("/chats/:id", async(req, res, next) => {
     let { id } = req.params;
     let chat = await Chat.findById(id);
-    res.render("edit.ejs", { chat });
+    if(!chat) {  // async error ko handel krne ke liye express by default next() ko call nahi lagayega to hume next() ko call lagana pagega
+        next(new ExpressError(404, "Chat not found"));
+    }
+    res.render("edit.ejs", { chat }); //create a separete page show.ejs for this show button instead of edit.ejs
 });
 
 //Edit Route
