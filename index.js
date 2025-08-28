@@ -40,7 +40,7 @@ app.get("/chats/new", (req, res) => {
 });
 
 //Create Route
-app.post("/chats", ayncWrap(async(req, res, next) => {
+app.post("/chats", asyncWrap(async(req, res, next) => {
     
          let { from, to, msg } = req.body;
         let newChat = new Chat ({
@@ -98,7 +98,7 @@ app.put("/chats/:id", asyncWrap(async(req, res) => {
 
 
 //Destroy Route
-app.delete("/chats/:id", asyncwrap(async (req, res) => {
+app.delete("/chats/:id", asyncWrap(async (req, res) => {
    
         let { id } = req.params;
     let deletedChat = await Chat.findByIdAndDelete(id);
