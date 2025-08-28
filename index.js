@@ -111,6 +111,15 @@ app.get("/", (req, res) => {
     res.send("root is working");
 });
 
+//to find name of error
+app.use((err, req, res, next) => {
+    console.log(err.name);
+    if(err.name === "ValidationError") {
+        console.log("This was a validation error. Please follow rules.")
+    }
+    next(err);
+});
+
 //Error handling Middleware
 app.use((err, req, res, next) => {
     let { status = 500, message = "Some Error Occured"} = err;
