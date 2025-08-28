@@ -24,29 +24,12 @@ async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/fakewhatsapp');
 }
 
-// let chat1 = new Chat({
-//     from: "neha",
-//     to: "priya",
-//     msg: "send me your exam sheets",
-//     created_at: new Date(),
-// });
-
-// chat1.save()
-// .then(res => {
-//     console.log(res);
-// }) 
-// .catch((err) => {
-//     console.log(err);
-// });
 
 //Index Route
 app.get("/chats", async(req, res) => {
     try {
         let chats = await Chat.find();
-    //console.log(chats);
-    // res.send("working");
-    res.render("index.ejs", { chats });
-
+        res.render("index.ejs", { chats });
     } catch(err) {
         next(err);
     }
@@ -55,7 +38,7 @@ app.get("/chats", async(req, res) => {
 
 //New Route
 app.get("/chats/new", (req, res) => {
-    // throw new ExpressError(404, "Page not found");  // this same thing will not work inside async functions 
+    // throw new ExpressError(404, "Page not found");  
     res.render("new.ejs");
 });
 
@@ -63,26 +46,12 @@ app.get("/chats/new", (req, res) => {
 app.post("/chats", async(req, res, next) => {
     try {
          let { from, to, msg } = req.body;
-    let newChat = new Chat ({
+        let newChat = new Chat ({
         from: from,
         to: to,
         msg: msg,
         created_at: new Date(),
     });
-    
-    //console.log(newChat);
-    //we will save the newChat in the database now
-    // newChat.save()
-    // .then((res) => {
-    //     console.log("chat was saved");
-    // })
-    // .catch((err) => {
-    //     console.log(err);
-    // });
-    // // res.send("working");
-    // res.redirect("/chats");
-
-    //instead of the above block of code we to save data and redirect we can write
     await newChat.save();
     res.redirect("/chats");
 
@@ -92,16 +61,15 @@ app.post("/chats", async(req, res, next) => {
 });
 
 
-//NEW - Show Route  (new show created in index.ejs create separate page show.ejs for this)
+//NEW - Show Route  
 app.get("/chats/:id", async(req, res, next) => {
-    // here though we are handling error but its better to use try catch
     try {
         let { id } = req.params;
     let chat = await Chat.findById(id);
-    if(!chat) {  // async error ko handel krne ke liye express by default next() ko call nahi lagayega to hume next() ko call lagana pagega
+    if(!chat) {  
         next(new ExpressError(404, "Chat not found"));
     }
-    res.render("edit.ejs", { chat }); //create a separete page show.ejs for this show button instead of edit.ejs
+    res.render("edit.ejs", { chat }); 
 
     } catch(err) {
         next(err);
@@ -125,7 +93,7 @@ app.get("/chats/:id/edit", async(req, res) => {
 app.put("/chats/:id", async(req, res) => {
     try {
         let { id } = req.params;
-    let { msg: newMsg } = req.body;  //here we have to give key value pair as newMsg does not exist inside body
+    let { msg: newMsg } = req.body;  
     console.log(newMsg);
     let updatedChat = await Chat.findByIdAndUpdate(
         id, 
