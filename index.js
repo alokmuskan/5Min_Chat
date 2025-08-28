@@ -94,12 +94,18 @@ app.post("/chats", async(req, res, next) => {
 
 //NEW - Show Route  (new show created in index.ejs create separate page show.ejs for this)
 app.get("/chats/:id", async(req, res, next) => {
-    let { id } = req.params;
+    // here though we are handling error but its better to use try catch
+    try {
+        let { id } = req.params;
     let chat = await Chat.findById(id);
     if(!chat) {  // async error ko handel krne ke liye express by default next() ko call nahi lagayega to hume next() ko call lagana pagega
         next(new ExpressError(404, "Chat not found"));
     }
     res.render("edit.ejs", { chat }); //create a separete page show.ejs for this show button instead of edit.ejs
+
+    } catch(err) {
+        next(err);
+    }
 });
 
 //Edit Route
