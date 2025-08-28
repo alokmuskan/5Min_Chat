@@ -5,6 +5,7 @@ const path = require("path");
 const Chat = require("./models/chat.js");
 const methodOverride = require("method-override");
 
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs"); 
 app.use(express.static(path.join(__dirname, "public"))); // ye batata hai ki hamari static files kaha se serve hone walli hai 
@@ -48,11 +49,12 @@ app.get("/chats", async(req, res) => {
 
 //New Route
 app.get("/chats/new", (req, res) => {
+    throw new ExpressError(404, "Page not found");  // this same thing will not work inside async functions 
     res.render("new.ejs");
 });
 
 //Create Route
-app.post("/chats", (req, res) => {
+app.post("/chats", async(req, res) => {
     let { from, to, msg } = req.body;
     let newChat = new Chat ({
         from: from,
@@ -63,17 +65,28 @@ app.post("/chats", (req, res) => {
     
     //console.log(newChat);
     //we will save the newChat in the database now
-    newChat.save()
-    .then((res) => {
-        console.log("chat was saved");
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-    // res.send("working");
+    // newChat.save()
+    // .then((res) => {
+    //     console.log("chat was saved");
+    // })
+    // .catch((err) => {
+    //     console.log(err);
+    // });
+    // // res.send("working");
+    // res.redirect("/chats");
+
+    //instead of the above block of code we to save data and redirect we can write
+    await newChat.save();
     res.redirect("/chats");
 });
 
+
+//NEW - Show Route
+app.get("/chats/:id", async(req, res, next) => {
+    let { id } = req.params;
+    let chat = await Chat.findById(id);
+    res.render("edit.ejs", { chat });
+});
 
 //Edit Route
 app.get("/chats/:id/edit", async(req, res) => {
@@ -110,6 +123,8 @@ app.delete("/chats/:id", async (req, res) => {
 app.get("/", (req, res) => {
     res.send("root is working");
 });
+
+
 
 app.listen(8080, () => {
     console.log("Server is listening on port 8080");
